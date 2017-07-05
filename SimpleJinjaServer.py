@@ -2,11 +2,16 @@ __author__ = 'nampnq'
 
 
 import os
-import urllib
 import posixpath
 import sys
 import importlib
 import mimetypes
+
+try:
+    from urllib import quote, unquote
+except ImportError:
+    # Python3
+    from urllib.parse import quote, unquote
 
 from flask import Flask
 from flask import render_template_string, abort, escape, render_template, redirect, make_response, send_file
@@ -25,7 +30,7 @@ def translate_path(path):
     # abandon query parameters
     path = path.split('?', 1)[0]
     path = path.split('#', 1)[0]
-    path = posixpath.normpath(urllib.unquote(path))
+    path = posixpath.normpath(unquote(path))
     words = path.split('/')
     words = filter(None, words)
     path = os.getcwd()
@@ -99,8 +104,8 @@ def index(path):
                 if os.path.islink(fullname):
                     displayname = name + "@"
                     # Note: a link to a directory displays with @ and links with /
-                lists_path.update({urllib.quote(linkname): escape(displayname)})
-            displaypath = escape(urllib.unquote(path_orginal))
+                lists_path.update({quote(linkname): escape(displayname)})
+            displaypath = escape(unquote(path_orginal))
             template = '''
             <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"><html>
             <title>Directory listing for {{displaypath}}</title>
@@ -128,7 +133,7 @@ def test(port=5000, debug=False, helper=None):
     if helper:
         mod = importlib.import_module(helper)
         if hasattr(mod, 'add_helpers'):
-            print '[INFO] Log helper successfully.'
+            print('[INFO] Log helper successfully.')
             mod.add_helpers(app)
 
     app.jinja_env.cache = {}
