@@ -137,6 +137,8 @@ def test(port=5000, debug=False, helper=None):
             mod.add_helpers(app)
 
     app.jinja_env.cache = {}
+    app.jinja_env.auto_reload = True
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run(port=port, debug=debug, use_reloader=False)
 
 if __name__ == "__main__":
